@@ -67,7 +67,7 @@ public class GamePane extends Pane {
         block10Image = new Image(MainStage.class.getResourceAsStream("resources/block10.png"));
         block11Image = new Image(MainStage.class.getResourceAsStream("resources/block11.png"));
 
-        Label resultsLabel = new Label ("Wyniki: Gracz Pierwszy: 0, Gracz Drugi: 0");
+        Label resultsLabel = new Label ("Wyniki: Gracz Pierwszy: 0, Gracz Drugi: 0, Tura: Gracz Pierwszy");
         resultsLabel.setMaxWidth(Double.MAX_VALUE);
         resultsLabel.setAlignment(Pos.CENTER);
         resultsLabel.setFont(Font.font("Comic Sans MS",16));
@@ -108,7 +108,6 @@ public class GamePane extends Pane {
                         }
                     } else {
                         if ((e.getX() > marginX && e.getX() < getWidth() - marginX) && (e.getY() > marginY && e.getY() < getHeight() - marginY)) {
-                            waiting = true;
                             double intOneFieldWidth = (oneFieldWidth);
                             double intOneFieldHeight = (oneFieldHeight);
 
@@ -134,56 +133,59 @@ public class GamePane extends Pane {
                                     secondSelectedY = board.height - 1;
                                 }
                             }
-                            board.visibleBoard[secondSelectedY][secondSelectedX] = 1;
-                            drawFrame();
-                            isSelected = false;
-                            checkMoveTask = new Task<Boolean>() {
-                                @Override
-                                protected Boolean call() throws Exception {
-                                    if (board.actualBoard[selectedY][selectedX] == board.actualBoard[secondSelectedY][secondSelectedX]) {
-                                        return true;
+
+                            if(secondSelectedY!=selectedY || secondSelectedX!=selectedX) {
+                                waiting = true;
+                                board.visibleBoard[secondSelectedY][secondSelectedX] = 1;
+                                drawFrame();
+                                isSelected = false;
+                                checkMoveTask = new Task<Boolean>() {
+                                    @Override
+                                    protected Boolean call() throws Exception {
+                                        if (board.actualBoard[selectedY][selectedX] == board.actualBoard[secondSelectedY][secondSelectedX]) {
+                                            return true;
+                                        }
+                                        if (board.actualBoard[selectedY][selectedX] != board.actualBoard[secondSelectedY][secondSelectedX]) {
+                                            Thread.sleep(1000);
+                                            return false;
+                                        } else {
+                                            return true;
+                                        }
                                     }
-                                    if (board.actualBoard[selectedY][selectedX] != board.actualBoard[secondSelectedY][secondSelectedX]) {
-                                        Thread.sleep(1000);
-                                        return false;
-                                    }
-                                    else {
-                                        return true;
-                                    }
-                                }
-                            };
-                            Thread checkMoveThread = new Thread(checkMoveTask);
-                            checkMoveThread.start();
-                            checkMoveTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-                                @Override
-                                public void handle(WorkerStateEvent event) {
-                                    if(!checkMoveTask.getValue()) {
-                                        board.visibleBoard[selectedY][selectedX] = 0;
-                                        board.visibleBoard[secondSelectedY][secondSelectedX] = 0;
-                                        drawFrame();
-                                    }
-                                    else{
-                                        if(player==1) {
-                                            firstPlayerScore++;
-                                            resultsLabel.setText("Wyniki: Gracz Pierwszy: " + firstPlayerScore + ", Gracz Drugi: " + secondPlayerScore);
+                                };
+                                Thread checkMoveThread = new Thread(checkMoveTask);
+                                checkMoveThread.start();
+                                checkMoveTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                                    @Override
+                                    public void handle(WorkerStateEvent event) {
+                                        if (!checkMoveTask.getValue()) {
+                                            board.visibleBoard[selectedY][selectedX] = 0;
+                                            board.visibleBoard[secondSelectedY][secondSelectedX] = 0;
+                                            drawFrame();
+                                        } else {
+                                            if (player == 1) {
+                                                firstPlayerScore++;
+                                            } else {
+                                                secondPlayerScore++;
+                                            }
+                                            checkNoMoves();
+                                        }
+                                        waiting = false;
+                                        if (player == 1) {
+                                            resultsLabel.setText("Wyniki: Gracz Pierwszy: " + firstPlayerScore + ", Gracz Drugi: " + secondPlayerScore +", Tura: Gracz Drugi");
+                                            player = 2;
                                         }
                                         else {
-                                            secondPlayerScore++;
-                                            resultsLabel.setText("Wyniki: Gracz Pierwszy: " + firstPlayerScore + ", Gracz Drugi: " + secondPlayerScore);
+                                            resultsLabel.setText("Wyniki: Gracz Pierwszy: " + firstPlayerScore + ", Gracz Drugi: " + secondPlayerScore + ", Tura: Gracz Pierwszy");
+                                            player = 1;
                                         }
-                                        checkNoMoves();
                                     }
-                                    waiting = false;
-                                    if(player==1)
-                                        player=2;
-                                    else
-                                        player=1;
-                                }
-                            });
-
+                                });
+                            }
                         } else {
-                            isSelected = false;
-                            board.visibleBoard[selectedX][selectedY] = 0;
+                           // isSelected = false;
+                           // board.visibleBoard[selectedY][selectedX] = 0;
+                         //   board.visibleBoard[secondSelectedY][secondSelectedX] = 0;
                         }
                         drawFrame();
                     }

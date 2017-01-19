@@ -37,11 +37,11 @@ public class MainStage extends Application {
         RowConstraints rowInMainMenu = new RowConstraints();
         rowInMainMenu.setPercentHeight(20);
         RowConstraints logoRowInMainMenu = new RowConstraints();
-        logoRowInMainMenu.setPercentHeight(55);
+        logoRowInMainMenu.setPercentHeight(25);
         RowConstraints downRowInMainMenu = new RowConstraints();
-        logoRowInMainMenu.setPercentHeight(55);
+        downRowInMainMenu.setPercentHeight(15);
 
-        mainGridPane.getRowConstraints().addAll(logoRowInMainMenu,rowInMainMenu,rowInMainMenu,downRowInMainMenu);
+        mainGridPane.getRowConstraints().addAll(logoRowInMainMenu,logoRowInMainMenu,rowInMainMenu,rowInMainMenu,downRowInMainMenu);
 
 
         ColumnConstraints columnInMainMenu = new ColumnConstraints();
@@ -51,11 +51,20 @@ public class MainStage extends Application {
         HBox voxelMemoryTitleHBox = new HBox();
         voxelMemoryTitleHBox.setAlignment(Pos.CENTER);
         voxelMemoryTitleLabel = new Text();
-        voxelMemoryTitleLabel.setText("Voxel \nMemory");
+        voxelMemoryTitleLabel.setText("Voxel");
         voxelMemoryTitleLabel.setId("logo");
-        voxelMemoryTitleLabel.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, 120));
+        voxelMemoryTitleLabel.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, 100));
         voxelMemoryTitleHBox.getChildren().add(voxelMemoryTitleLabel);
         mainGridPane.add(voxelMemoryTitleHBox,0,0);
+
+        HBox voxelMemoryTitleHBox2 = new HBox();
+        voxelMemoryTitleHBox2.setAlignment(Pos.CENTER);
+        voxelMemoryTitleLabel2 = new Text();
+        voxelMemoryTitleLabel2.setText("Memory");
+        voxelMemoryTitleLabel2.setId("logo");
+        voxelMemoryTitleLabel2.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, 100));
+        voxelMemoryTitleHBox2.getChildren().add(voxelMemoryTitleLabel2);
+        mainGridPane.add(voxelMemoryTitleHBox2,0,1);
 
         HBox singlePlayerGameButtonHBox = new HBox();
         singlePlayerGameButtonHBox.setAlignment(Pos.CENTER);
@@ -82,7 +91,7 @@ public class MainStage extends Application {
                 alert.showAndWait();
             }
         });
-        mainGridPane.add(singlePlayerGameButtonHBox,0,1);
+        mainGridPane.add(singlePlayerGameButtonHBox,0,2);
 
         HBox twoPlayersGameButtonHBox = new HBox();
         twoPlayersGameButtonHBox.setAlignment(Pos.CENTER);
@@ -97,7 +106,7 @@ public class MainStage extends Application {
         twoPlayersGameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                BoardLogic boardLogic = new BoardLogic(6,5);
+                BoardLogic boardLogic = new BoardLogic(7,6);
                 GamePane gamePane = new GamePane(boardLogic,1);
                 sceneOfTheGame = new Scene(gamePane,mainScene.getWidth(),mainScene.getHeight());
                 sceneOfTheGame.getStylesheets().addAll(Theme);
@@ -128,15 +137,16 @@ public class MainStage extends Application {
 
             }
         });
-        mainGridPane.add(twoPlayersGameButtonHBox,0,2);
+        mainGridPane.add(twoPlayersGameButtonHBox,0,3);
 
         Label programInfoLabel = new Label();
         programInfoLabel.setMaxWidth(Double.MAX_VALUE);
         programInfoLabel.setAlignment(Pos.CENTER);
         programInfoLabel.setText("Wersja: 0.1 pre-alpha");
+        programInfoLabel.setFont(Font.font("Comic Sans MS",20));
         programInfoLabel.setTextAlignment(TextAlignment.CENTER);
 
-        mainGridPane.add(programInfoLabel,0,3);
+        mainGridPane.add(programInfoLabel,0,4);
 
         mainBorderPane.setCenter(mainGridPane);
         mainScene = new Scene(mainBorderPane,500,500);
@@ -194,6 +204,7 @@ public class MainStage extends Application {
     private Stage mainStage;
     private Scene mainScene;
     private Text voxelMemoryTitleLabel;
+    private Text voxelMemoryTitleLabel2;
 
 }
 
