@@ -1,0 +1,31 @@
+.root {
+    -fx-background-image: url("../resources/redsand.png");
+}
+#logo {
+   -fx-fill: gray;
+   -fx-stroke: black;
+   -fx-stroke-width: 5;
+   -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 0 , 0 );
+   -fx-text-alignment: center;
+}
+.button {
+    -fx-background-color: gray;
+    -fx-background-radius: 30;
+    -fx-background-insets: 0;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 0 , 0 );
+}
+.button:hover {
+    -fx-background-color: darkgray;
+    -fx-background-radius: 30;
+    -fx-background-insets: 0;
+    -fx-text-fill: white;
+}
+#buttonInMainMenu {
+    -fx-border-color: black;
+    -fx-border-width: 4;
+    -fx-border-radius: 30;
+}
+.table-cell {
+    -fx-alignment: CENTER;
+}
