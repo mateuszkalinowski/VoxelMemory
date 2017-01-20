@@ -82,7 +82,7 @@ public class MainStage extends Application {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.getDialogPane().getStylesheets().add(Theme);
                 Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
-                alertStage.getIcons().add(new Image(MainStage.class.getResourceAsStream("resources/stone.png")));
+                alertStage.getIcons().add(new Image(MainStage.class.getResourceAsStream("resources/pick_iron.png")));
                 alert.setTitle("Błąd uruchamiania gry");
                 alert.setHeaderText("Gra z komputerem zostanie dopisana wkrótce");
                 alert.setContentText("Możesz zagrać w grę dwuosobową");
@@ -92,6 +92,39 @@ public class MainStage extends Application {
             }
         });
         mainGridPane.add(singlePlayerGameButtonHBox,0,2);
+        singlePlayerGameButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                BoardLogic boardLogic = new BoardLogic(6,5);
+                GamePane gamePane = new GamePane(boardLogic,0);
+                sceneOfTheGame = new Scene(gamePane,mainScene.getWidth(),mainScene.getHeight());
+                sceneOfTheGame.getStylesheets().addAll(Theme);
+                mainStage.setScene(sceneOfTheGame);
+                gamePane.drawFrame();
+
+                sceneOfTheGame.setOnKeyReleased(new EventHandler<KeyEvent>() {
+                    @Override
+                    public void handle(KeyEvent event) {
+                        if(event.getCode() == KeyCode.ESCAPE) {
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.getDialogPane().getStylesheets().add(Theme);
+                            Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+                            alertStage.getIcons().add(new Image(MainStage.class.getResourceAsStream("resources/pick_iron.png")));
+                            alert.setTitle("Potwierdzenie Wyjścia");
+                            alert.setHeaderText("Chcesz wrócić do menu głównego?");
+                            alert.setContentText("Obecna rozgrywka nie zostanie zapisana.");
+                            ButtonType buttonYes = new ButtonType("Tak");
+                            ButtonType buttonNo = new ButtonType("Anuluj");
+                            alert.getButtonTypes().setAll(buttonNo, buttonYes);
+                            Optional<ButtonType> result = alert.showAndWait();
+                            if (result.isPresent() && result.get() == buttonYes) {
+                                backToMenu();
+                            }
+                        }
+                    }
+                });
+            }
+        });
 
         HBox twoPlayersGameButtonHBox = new HBox();
         twoPlayersGameButtonHBox.setAlignment(Pos.CENTER);
@@ -120,7 +153,7 @@ public class MainStage extends Application {
                             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                             alert.getDialogPane().getStylesheets().add(Theme);
                             Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
-                            alertStage.getIcons().add(new Image(MainStage.class.getResourceAsStream("resources/stone.png")));
+                            alertStage.getIcons().add(new Image(MainStage.class.getResourceAsStream("resources/pick_iron.png")));
                             alert.setTitle("Potwierdzenie Wyjścia");
                             alert.setHeaderText("Chcesz wrócić do menu głównego?");
                             alert.setContentText("Obecna rozgrywka nie zostanie zapisana.");
@@ -163,7 +196,7 @@ public class MainStage extends Application {
         mainStage.setMinWidth(750);
         mainStage.setMinHeight(650);
 
-        mainStage.getIcons().add(new Image(MainStage.class.getResourceAsStream("resources/stone.png")));
+        mainStage.getIcons().add(new Image(MainStage.class.getResourceAsStream("resources/pick_iron.png")));
 
         mainStage.show();
 

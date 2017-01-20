@@ -1,5 +1,5 @@
 .root {
-    -fx-background-image: url("../resources/redsand.png");
+    -fx-background-image: url("../resources/dirt.png");
 }
 #logo {
    -fx-fill: gray;

@@ -22,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import logic.BoardLogic;
+import logic.ComputerPlayer;
 
 import java.util.Optional;
 
@@ -104,6 +105,7 @@ public class GamePane extends Pane {
                             }
                             isSelected = true;
                             board.visibleBoard[selectedY][selectedX] = 1;
+                            computerPlayer.addKnownElement(selectedX,selectedY,board.actualBoard[selectedY][selectedX]);
                             drawFrame();
                         }
                     } else {
@@ -137,6 +139,7 @@ public class GamePane extends Pane {
                             if(secondSelectedY!=selectedY || secondSelectedX!=selectedX) {
                                 waiting = true;
                                 board.visibleBoard[secondSelectedY][secondSelectedX] = 1;
+                                computerPlayer.addKnownElement(secondSelectedX,secondSelectedY,board.actualBoard[secondSelectedY][secondSelectedX]);
                                 drawFrame();
                                 isSelected = false;
                                 checkMoveTask = new Task<Boolean>() {
@@ -145,11 +148,9 @@ public class GamePane extends Pane {
                                         if (board.actualBoard[selectedY][selectedX] == board.actualBoard[secondSelectedY][secondSelectedX]) {
                                             return true;
                                         }
-                                        if (board.actualBoard[selectedY][selectedX] != board.actualBoard[secondSelectedY][secondSelectedX]) {
+                                        else {
                                             Thread.sleep(1000);
                                             return false;
-                                        } else {
-                                            return true;
                                         }
                                     }
                                 };
@@ -161,8 +162,9 @@ public class GamePane extends Pane {
                                         if (!checkMoveTask.getValue()) {
                                             board.visibleBoard[selectedY][selectedX] = 0;
                                             board.visibleBoard[secondSelectedY][secondSelectedX] = 0;
-                                            drawFrame();
                                         } else {
+                                            computerPlayer.removeKnownElement(selectedX,selectedY,board.actualBoard[selectedY][selectedX]);
+                                            computerPlayer.removeKnownElement(secondSelectedX,secondSelectedY,board.actualBoard[secondSelectedY][secondSelectedX]);
                                             if (player == 1) {
                                                 firstPlayerScore++;
                                             } else {
@@ -170,7 +172,6 @@ public class GamePane extends Pane {
                                             }
                                             checkNoMoves();
                                         }
-                                        waiting = false;
                                         if (player == 1) {
                                             resultsLabel.setText("Wyniki: Gracz Pierwszy: " + firstPlayerScore + ", Gracz Drugi: " + secondPlayerScore +", Tura: Gracz Drugi");
                                             player = 2;
@@ -179,13 +180,56 @@ public class GamePane extends Pane {
                                             resultsLabel.setText("Wyniki: Gracz Pierwszy: " + firstPlayerScore + ", Gracz Drugi: " + secondPlayerScore + ", Tura: Gracz Pierwszy");
                                             player = 1;
                                         }
+                                        drawFrame();
+                                        if(gamemode==1) {
+                                            waiting=false;
+                                        }
+                                        else {
+                                            Task<Boolean> computerMoveTask = new Task<Boolean>() {
+                                                @Override
+                                                protected Boolean call() throws Exception {
+                                                    move1 = computerPlayer.getFirstMove(board);
+                                                    board.visibleBoard[move1[1]][move1[0]] = 1;
+                                                    drawFrame();
+                                                    move2 = computerPlayer.getSecondMove(board);
+                                                    board.visibleBoard[move2[1]][move2[0]] = 1;
+                                                    drawFrame();
+                                                    if(board.actualBoard[move1[1]][move1[0]] == board.actualBoard[move2[1]][move2[0]]) {
+                                                        return true;
+                                                    }
+                                                    else {
+                                                        Thread.sleep(1000);
+                                                        return false;
+                                                    }
+                                                }
+                                            };
+
+                                            Thread computerMoveThread = new Thread(computerMoveTask);
+                                            computerMoveThread.start();
+                                            computerMoveTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                                                @Override
+                                                public void handle(WorkerStateEvent event) {
+                                                    if(!computerMoveTask.getValue()) {
+                                                        board.visibleBoard[move2[1]][move2[0]] = 0;
+                                                        board.visibleBoard[move1[1]][move1[0]] = 0;
+                                                    } else {
+                                                        computerPlayer.removeKnownElement(move2[0],move2[1],board.actualBoard[move2[1]][move2[0]]);
+                                                        computerPlayer.removeKnownElement(move1[0],move1[1],board.actualBoard[move1[1]][move1[0]]);
+                                                        secondPlayerScore++;
+                                                        resultsLabel.setText("Wyniki: Gracz Pierwszy: " + firstPlayerScore + ", Gracz Drugi: " + secondPlayerScore +", Tura: Gracz Drugi");
+                                                        resultsLabel.setText("Wyniki: Gracz Pierwszy: " + firstPlayerScore + ", Gracz Drugi: " + secondPlayerScore + ", Tura: Gracz Pierwszy");
+                                                        checkNoMoves();
+                                                    }
+                                                    drawFrame();
+                                                    waiting=false;
+                                                    player=1;
+                                                }
+                                            });
+
+                                        }
                                     }
                                 });
                             }
-                        } else {
-                           // isSelected = false;
-                           // board.visibleBoard[selectedY][selectedX] = 0;
-                         //   board.visibleBoard[secondSelectedY][secondSelectedX] = 0;
                         }
                         drawFrame();
                     }
@@ -195,14 +239,25 @@ public class GamePane extends Pane {
 
 
     }
-    void checkNoMoves(){
+    private void checkNoMoves(){
         if(!board.anyMove()) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.getDialogPane().getStylesheets().add(VoxelMemory.mainStage.Theme);
             Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
-            alertStage.getIcons().add(new Image(MainStage.class.getResourceAsStream("resources/stone.png")));
+            alertStage.getIcons().add(new Image(MainStage.class.getResourceAsStream("resources/pick_iron.png")));
             alert.setTitle("Koniec gry");
-            alert.setHeaderText("Koniec ruchów, co chcesz zrobić?");
+            if(gamemode==1 && firstPlayerScore<secondPlayerScore)
+                alert.setHeaderText("Koniec ruchów, wygrał gracz drugi, co chcesz zrobić?");
+            if(gamemode==1 && firstPlayerScore>secondPlayerScore)
+                alert.setHeaderText("Koniec ruchów, wygrał gracz pierwszy, co chcesz zrobić?");
+            if(gamemode==1 && firstPlayerScore==secondPlayerScore)
+                alert.setHeaderText("Koniec ruchów, remis, co chcesz zrobić?");
+            if(gamemode==0 && firstPlayerScore<secondPlayerScore)
+                alert.setHeaderText("Koniec ruchów, wygrał komputer, co chcesz zrobić?");
+            if(gamemode==0 && firstPlayerScore>secondPlayerScore)
+                alert.setHeaderText("Koniec ruchów, wygrałeś, co chcesz zrobić?");
+            if(gamemode==0 && firstPlayerScore==secondPlayerScore)
+                alert.setHeaderText("Koniec ruchów, remis, co chcesz zrobić?");
             alert.setContentText("Możesz wrócić do menu głównego, bądź zagrać jeszcze raz");
             ButtonType buttonYes = new ButtonType("Powrót do Menu");
             ButtonType buttonNo = new ButtonType("Ponowna Gra");
@@ -214,6 +269,8 @@ public class GamePane extends Pane {
             else {
                 board.resetBoard();
                 player=1;
+                firstPlayerScore=0;
+                secondPlayerScore=0;
                 drawFrame();
             }
         }
@@ -296,6 +353,7 @@ public class GamePane extends Pane {
         }
     }
 
+    ComputerPlayer computerPlayer = new ComputerPlayer();
 
     private BoardLogic board;
     private int gamemode;
@@ -341,4 +399,6 @@ public class GamePane extends Pane {
 
     int player = 1;
 
+    int move1[];
+    int move2[];
 }
