@@ -139,7 +139,7 @@ public class MainStage extends Application {
         twoPlayersGameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                BoardLogic boardLogic = new BoardLogic(7,6);
+                BoardLogic boardLogic = new BoardLogic(6,5);
                 GamePane gamePane = new GamePane(boardLogic,1);
                 sceneOfTheGame = new Scene(gamePane,mainScene.getWidth(),mainScene.getHeight());
                 sceneOfTheGame.getStylesheets().addAll(Theme);
@@ -175,7 +175,7 @@ public class MainStage extends Application {
         Label programInfoLabel = new Label();
         programInfoLabel.setMaxWidth(Double.MAX_VALUE);
         programInfoLabel.setAlignment(Pos.CENTER);
-        programInfoLabel.setText("Wersja: 0.1 pre-alpha");
+        programInfoLabel.setText("Wersja: 1.0 alpha");
         programInfoLabel.setFont(Font.font("Comic Sans MS",20));
         programInfoLabel.setTextAlignment(TextAlignment.CENTER);
 
@@ -189,7 +189,7 @@ public class MainStage extends Application {
         mainStage.setWidth(750);
         mainStage.setHeight(650);
 
-        mainStage.setResizable(false);
+        mainStage.setResizable(true);
 
         mainScene.getStylesheets().add(Theme);
 
@@ -203,8 +203,6 @@ public class MainStage extends Application {
         mainStage.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                singlePlayerGameButton.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, newValue.doubleValue() / 25));
-                twoPlayersGameButton.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, newValue.doubleValue() / 25));
             }
         });
 

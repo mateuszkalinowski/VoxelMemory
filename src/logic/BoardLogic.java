@@ -25,10 +25,9 @@ public class BoardLogic {
             for (int j = 0; j < width; j++) {
                 if (actualBoard[i][j] == -1) {
                     int newIndex = rnd.nextInt(typesCount);
-                    int[] newIndexSecond = possiblePlace();
                     actualBoard[i][j] = newIndex;
+                    int[] newIndexSecond = possiblePlace();
                     actualBoard[newIndexSecond[1]][newIndexSecond[0]] = newIndex;
-                    System.out.println("Type: " + newIndex + " " + i + " " + j + " " + newIndexSecond[1] + " " + newIndexSecond[0]);
                 }
             }
         }
@@ -55,13 +54,13 @@ public class BoardLogic {
         for(int i = 0; i < height;i++) {
             for(int j = 0; j < width;j++) {
                 visibleBoard[i][j]=0;
-                actualBoard[i][j]=0;
+                actualBoard[i][j]=-1;
             }
         }
         Random rnd = new Random();
         for(int i = 0; i < height;i++) {
             for (int j = 0; j < width; j++) {
-                if (actualBoard[i][j] == 0) {
+                if (actualBoard[i][j] == -1) {
                     int newIndex = rnd.nextInt(typesCount);
                     actualBoard[i][j] = newIndex;
                     int[] newIndexSecond = possiblePlace();

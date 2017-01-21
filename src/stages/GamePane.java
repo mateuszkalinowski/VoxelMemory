@@ -3,6 +3,8 @@ package stages;
 import com.sun.javafx.tk.Toolkit;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import core.VoxelMemory;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
@@ -73,6 +75,19 @@ public class GamePane extends Pane {
         resultsLabel.setAlignment(Pos.CENTER);
         resultsLabel.setFont(Font.font("Comic Sans MS",16));
         mainGridPane.add(resultsLabel,0,1);
+
+        heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                drawFrame();
+            }
+        });
+        widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                drawFrame();
+            }
+        });
 
 
         setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -281,14 +296,29 @@ public class GamePane extends Pane {
             int[] rozmiar = VoxelMemory.mainStage.getSizeAsArray();
             int width = rozmiar[0];
             int height = (int) mainGridPane.getRowConstraints().get(0).getPercentHeight() * rozmiar[1] / 100;
-
+            marginX=20.0;
+            marginY=20.0;
+            if (width > height) {
+                double difference = (width - height);
+                if (difference / 2.0 > 20)
+                    marginX = difference / 2.0;
+                else
+                    marginX = 20;
+            } else {
+                marginX = 20;
+            }
+            if (height > width) {
+                double difference = (height - width);
+                if (difference / 2.0 > 20)
+                    marginY = difference / 2.0;
+                else
+                    marginY = 20;
+            } else
+                marginY = 20;
             canvas.setHeight(height);
             canvas.setWidth(width);
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.clearRect(0, 0, width, height);
-
-            marginX=20.0;
-            marginY=20.0;
 
             oneFieldWidth = (width - marginX * 2.0) / (board.getWidht() * 1.0);
             oneFieldHeight = (height - marginY * 2.0) / (board.getHeight() * 1.0);
